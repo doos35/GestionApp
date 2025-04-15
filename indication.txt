@@ -1,0 +1,177 @@
+Contexte et Objectif :
+Développe une application web interactive et modulable permettant de gérer des appareils au sein d'une salle représentée par un fond SVG affichant ses différents étages. Le système doit offrir une interface intuitive où l’utilisateur peut créer, déplacer, connecter et supprimer des blocs. Chaque bloc représente soit un appareil, soit un conteneur (rack, baie, etc.). Les appareils peuvent être imbriqués dans des blocs ou exister seuls, et la gestion des emplacements se fait par un système de drag-and-drop dans des compartiments définis (hors du menu en haut).
+
+Fonctionnalités Clés :
+
+1. **Interface et Design :**
+   - **Fond Technique :** Utilise un fond SVG qui représente la salle et ses différents étages.
+   - **Zone de Travail :** Une zone principale où tous les blocs sont positionnables librement (sauf le menu supérieur).
+   - **Panneau d’Actions :** Une barre d’outils contextuelle dotée de boutons pour ajouter un bloc (avec choix du type), connecter des blocs, imbrication/désimbrication, et une corbeille pour supprimer des éléments.
+   - **Design Moderne :** Interface dynamique et ergonomique, optimisée pour souris et écrans tactiles.
+
+2. **Système de Blocs Dynamiques et Gestion CRUD :**
+   - **Interface de Configuration :**  
+     ```javascript
+     interface AppConfig {
+       mode: 'edit' | 'inventory' | 'view';
+       theme: 'dark' | 'light';
+       features: {
+         qrGeneration: boolean;
+         nestedBlocs: boolean;
+         svgBackground: boolean;
+       };
+     }
+     ```
+   - **Gestionnaire de Blocs :** Fournir des méthodes pour ajouter, supprimer, connecter, imbriquer et désimbriquer des blocs.
+     ```javascript
+     const blocManager = {
+       add: (type, parentId = null) => {
+         /* Génère un bloc avec une empreinte unique */
+       },
+       delete: (id) => {
+         /* Supprime le bloc et nettoie les connexions associées */
+       },
+       connect: (sourceId, targetId) => {
+         /* Valide et crée une liaison bidirectionnelle entre blocs */
+       },
+       nest: (childId, parentId) => {
+         /* Imbrique le bloc enfant dans un parent, avec vérification anti-boucle */
+       },
+       unnest: (blocId) => {
+         /* Replace le bloc au niveau racine */
+       }
+     };
+     ```
+
+3. **UI/UX et Composants Spécifiques :**
+   - **Barre d’Outils Contextuelle :**  
+     Inclut des composants tels que :
+     - Un connecteur de blocs (`BlockConnector`) pour lier des blocs (mode `connectionMode`).
+     - Un détecteur d’imbrication (`NestDetector`).
+     - Une pile d’annulation/refaire (`UndoRedoStack`).
+   - **Zone de Travail :**  
+     Comprend un composant Workspace qui gère le drop et affiche le fond SVG et les blocs déplaçables.
+     ```jsx
+     <Workspace onDrop={(e) => handleDrop(e)}>
+       <SVGBackground scale={1.2} />
+       {blocs.map(bloc => (
+         <DraggableBloc 
+           key={bloc.id}
+           onConnect={(target) => blocManager.connect(bloc.id, target)}
+         />
+       ))}
+     </Workspace>
+     ```
+
+4. **Modules Intégrés et Fonctionnalités Avancées :**
+   - **Inventaire :**
+     - Une classe `InventorySystem` pour gérer une checklist et l’historique des scans, avec génération de QR codes pour les éléments non encore scannés.
+       ```python
+       class InventorySystem:
+           def __init__(self):
+               self.checklist = []
+               self.scan_history = []
+       
+           def generate_qr_batch(self):
+               """Génère les QR codes manquants"""
+               return [QR(item) for item in self.checklist if not item.qr_scanned]
+       ```
+   - **Gestion des Plans Techniques :**
+     - Définir un format de fichier JSON pour la configuration des plans.
+       ```json
+       {
+         "version": "1.0",
+         "background": "server-room.svg",
+         "calibration": {
+           "pixelsPerMeter": 42.3,
+           "referencePoints": [[0, 0], [10, 0]]
+         }
+       }
+       ```
+   - **Interopérabilité :**
+     - Fonctions d’exportation et d’importation permettant d’échanger des données (export vers Excel, import CSV/JSON).
+       ```javascript
+       function exportToExcel() {
+         /* Inclut les blocs, connexions et le statut inventaire */
+       }
+       
+       function importFromFile(file) {
+         /* Gère l’import depuis CSV/JSON en réalisant les validations nécessaires */
+       }
+       ```
+
+5. **Sécurité et Contrôles :**
+   - Définir des limites et règles pour prévenir des erreurs :
+     ```javascript
+     const operationGuards = {
+       maxNestingLevel: 5,
+       maxConnections: 20,
+       allowedBlockTypes: ['equipment', 'area', 'cable'],
+       canConnect: (source, target) => {
+         return source.type !== target.type;
+       }
+     };
+     ```
+
+6. **Raccourcis Clavier et Retours Visuels :**
+   - **Lier des blocs :** Ctrl + Drag (affichage d’une flèche bleue).
+   - **Imbrication :** Alt + Drop (affichage d’une indentation et icône).
+   - **Sélection Multiple :** Shift + Click (surbrillance en vert).
+   - **Suppression :** Touche Del avec animation de disparition.
+
+7. **Mécanismes Avancés et Diagramme d'État :**
+   - Gestion des états avec transitions intuitives :
+     ```plaintext
+     stateDiagram-v2
+       [*] --> Édition
+       Édition --> Inventaire: Scan QR
+       Inventaire --> Vue: Export PDF
+       Vue --> Édition: Double-clic
+     ```
+
+8. **Configuration Système et Styles Recommandés :**
+   - Configuration minimale requise pour l’application :
+     ```json
+     {
+       "minimumSpecs": {
+         "browser": "Chrome 120+",
+         "resolution": "1920x1080",
+         "permissions": ["clipboard-write", "fullscreen"]
+       },
+       "recomendedStyles": {
+         "connectorColor": "#3a86ff",
+         "nestedBorder": "1px dashed #7b2cbf"
+       }
+     }
+     ```
+   - Fonctionnalités exclusives pour 2024 :
+     - Gestion parent/enfant avec limites configurables.
+     - Système de liaison/imbrication intelligent anti-collision.
+     - Intégration transparente des fonds SVG et des QR codes.
+     - Protection contre les erreurs (boucles infinies, surcharge).
+     - Fonctionnement hors-ligne pour les ateliers et chantiers.
+
+9. **Exemple d’Usage Complet :**
+   ```javascript
+   // Création d'une structure imbriquée
+   let rack = blocManager.add('container');
+   let server = blocManager.add('equipment', parentId = rack.id);
+   let switchBlock = blocManager.add('equipment', parentId = rack.id);
+   blocManager.connect(server.id, switchBlock.id);
+   
+   // Exportation des données vers Excel
+   exporter.export(include=['blocs', 'connections']);
+   
+   // Initialisation de l'application avec fonctionnalités expérimentales
+   initApp({
+     enableExperimental: ['qrDragDrop', 'autoNesting'],
+     strictMode: true
+   });
+
+Instructions Supplémentaires :
+
+    Intégrer un système de liaison/imbrication intuitif et fluide.
+
+    Assurer une intégration transparente des plans techniques.
+
+    Garantir un fonctionnement hors-ligne pour une utilisation en atelier ou sur chantier.
