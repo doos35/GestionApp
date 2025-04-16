@@ -29,5 +29,19 @@ export const useBlocStore = create((set, get) => ({
         return bloc;
       })
     }));
+  },
+
+  connectBlocs: (sourceId, targetId) => {
+    set(state => ({
+      blocs: state.blocs.map(bloc => {
+        if (bloc.id === sourceId && !bloc.connections.includes(targetId)) {
+          return { ...bloc, connections: [...bloc.connections, targetId] };
+        }
+        if (bloc.id === targetId && !bloc.connections.includes(sourceId)) {
+          return { ...bloc, connections: [...bloc.connections, sourceId] };
+        }
+        return bloc;
+      })
+    }));
   }
 }));

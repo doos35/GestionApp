@@ -4,6 +4,7 @@ import { useBlocStore } from '../stores/blocStore';
 const DraggableBloc = ({ bloc }) => {
   const updateBloc = useBlocStore(state => state.updateBloc);
   const nestBloc = useBlocStore(state => state.nestBloc);
+  const connectBlocs = useBlocStore(state => state.connectBlocs);
   const blocs = useBlocStore(state => state.blocs);
   const [dragging, setDragging] = useState(false);
   const ref = useRef(null);
@@ -45,6 +46,17 @@ const DraggableBloc = ({ bloc }) => {
     }
   };
 
+  const handleConnectClick = () => {
+    if (!window.connectSource) {
+      window.connectSource = bloc.id;
+      alert("Bloc source sélectionné. Cliquez maintenant sur le bloc cible.");
+    } else {
+      connectBlocs(window.connectSource, bloc.id);
+      window.connectSource = null;
+      alert("Blocs connectés !");
+    }
+  };
+
   return (
     <div
       id={`bloc-${bloc.id}`}
@@ -64,6 +76,7 @@ const DraggableBloc = ({ bloc }) => {
       }}
     >
       {bloc.type}
+      <button onClick={handleConnectClick} style={{ marginLeft: 5 }}>🔗</button>
     </div>
   );
 };
