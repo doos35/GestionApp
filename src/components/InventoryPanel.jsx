@@ -14,7 +14,7 @@ const InventoryPanel = () => {
       <h3>Inventaire</h3>
       {blocs.map(bloc => (
         <div key={bloc.id} style={{ marginBottom: 5 }}>
-          <strong>{bloc.type}</strong> – {bloc.qrScanned ? '✅ Scanné' : '❌ Non scanné'}
+          <strong>{bloc.name}</strong> – {bloc.qrScanned ? '✅ Scanné' : '❌ Non scanné'}
           {!bloc.qrScanned && (
             <button onClick={() => handleScan(bloc.id)} style={{ marginLeft: 5 }}>
               Scanner

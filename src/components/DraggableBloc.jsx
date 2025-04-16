@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useBlocStore } from '../stores/blocStore';
 
-const DraggableBloc = ({ bloc }) => {
+const DraggableBloc = ({ bloc, onSelect }) => {
   const updateBloc = useBlocStore(state => state.updateBloc);
   const nestBloc = useBlocStore(state => state.nestBloc);
   const connectBlocs = useBlocStore(state => state.connectBlocs);
@@ -64,18 +64,19 @@ const DraggableBloc = ({ bloc }) => {
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      onDoubleClick={() => onSelect(bloc)}
       style={{
         position: 'absolute',
         left: bloc.x,
         top: bloc.y,
         cursor: 'grab',
         padding: 10,
-        background: '#fff',
+        background: bloc.color || '#fff',
         border: bloc.parentId ? '1px dashed #7b2cbf' : '1px solid #000',
         borderRadius: 4
       }}
     >
-      {bloc.type}
+      <strong>{bloc.name}</strong>
       <button onClick={handleConnectClick} style={{ marginLeft: 5 }}>🔗</button>
     </div>
   );

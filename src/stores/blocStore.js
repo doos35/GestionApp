@@ -8,7 +8,10 @@ export const useBlocStore = create((set, get) => ({
     const id = nanoid();
     const newBloc = {
       id,
+      name: `Bloc-${id.slice(0, 4)}`,
+      description: '',
       type,
+      color: '#ffffff',
       parentId,
       children: [],
       connections: [],
@@ -25,6 +28,16 @@ export const useBlocStore = create((set, get) => ({
       blocs: state.blocs.map(bloc =>
         bloc.id === id ? { ...bloc, ...updates } : bloc
       )
+    }));
+  },
+
+  deleteBloc: (id) => {
+    set(state => ({
+      blocs: state.blocs.filter(bloc => bloc.id !== id).map(bloc => ({
+        ...bloc,
+        children: bloc.children.filter(c => c !== id),
+        connections: bloc.connections.filter(c => c !== id)
+      }))
     }));
   },
 

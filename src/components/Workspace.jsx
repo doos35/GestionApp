@@ -3,7 +3,7 @@ import { useBlocStore } from '../stores/blocStore';
 import DraggableBloc from './DraggableBloc';
 import ConnectionLine from './ConnectionLine';
 
-const Workspace = () => {
+const Workspace = ({ onSelectBloc }) => {
   const blocs = useBlocStore(state => state.blocs);
   const addBloc = useBlocStore(state => state.addBloc);
 
@@ -40,7 +40,7 @@ const Workspace = () => {
         )}
       </svg>
       {blocs.map(bloc => (
-        <DraggableBloc key={bloc.id} bloc={bloc} />
+        <DraggableBloc key={bloc.id} bloc={bloc} onSelect={onSelectBloc} />
       ))}
     </div>
   );
