@@ -6,7 +6,16 @@ export const useBlocStore = create((set, get) => ({
 
   addBloc: (type, parentId = null, x = 100, y = 100) => {
     const id = nanoid();
-    const newBloc = { id, type, parentId, children: [], connections: [], x, y };
+    const newBloc = {
+      id,
+      type,
+      parentId,
+      children: [],
+      connections: [],
+      x,
+      y,
+      qrScanned: false
+    };
     set(state => ({ blocs: [...state.blocs, newBloc] }));
     return id;
   },

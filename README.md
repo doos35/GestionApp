@@ -1,3 +1,3 @@
 # SVG Bloc Manager
 
-Gestion de blocs avec drag & drop, imbrication Alt+Drop, et connexions visuelles
+Gestion de blocs avec drag & drop, connexions, imbrication et module d'inventaire
