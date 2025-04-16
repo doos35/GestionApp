@@ -1,3 +1,3 @@
 # SVG Bloc Manager
 
-Projet Vite + React prêt pour le déploiement Vercel (index.html à la racine).
+Drag & drop + Connexions + Imbrication via Alt + Drop

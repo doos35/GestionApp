@@ -1,12 +1,32 @@
 import React from 'react';
+import { useBlocStore } from '../stores/blocStore';
+import DraggableBloc from './DraggableBloc';
 
 const Workspace = () => {
+  const blocs = useBlocStore(state => state.blocs);
+  const addBloc = useBlocStore(state => state.addBloc);
+
+  const handleDoubleClick = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    addBloc("equipment", null, x, y);
+  };
+
   return (
-    <svg width="100%" height="100%" style={{ backgroundColor: '#f0f0f0' }}>
-      <text x="50%" y="50%" textAnchor="middle" fill="#aaa" fontSize="24">
-        SVG Workspace Placeholder
-      </text>
-    </svg>
+    <div
+      onDoubleClick={handleDoubleClick}
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        background: '#f0f0f0'
+      }}
+    >
+      {blocs.map(bloc => (
+        <DraggableBloc key={bloc.id} bloc={bloc} />
+      ))}
+    </div>
   );
 };
 
